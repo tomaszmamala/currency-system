@@ -21,8 +21,13 @@ class PayoutController extends AbstractController
             throw new TransactionExecutionException('Payout transaction date can be only on the current date');
         }
 
-        if (!$this->balanceManager->hasEnoughMoneyForPayout(
+        $currencyAccount = $this->balanceManager->getOrCreateAccount(
             $transaction->getBusinessPartner(),
+            $transaction->getCurrency()
+        );
+
+        if (!$this->balanceManager->hasEnoughMoneyForPayout(
+            $currencyAccount,
             $transaction->getAmount()
         )) {
             throw new TransactionExecutionException('You do not have enough money for a payout');
