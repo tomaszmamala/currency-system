@@ -69,3 +69,11 @@ Feature: Currency Exchange
     """
     Then the response status code should be 200
     And the JSON node "executed" should be true
+    # Verify: CHF account shows +1000 (payin) and -1000 (exchange_out)
+    When I send a GET request to "/api/transactions?currency=CHF"
+    Then the response status code should be 200
+    And the JSON node "hydra:member" should have 2 elements
+    # Verify: EUR account shows +1100 (exchange_in) and -1100 (payout)
+    When I send a GET request to "/api/transactions?currency=EUR"
+    Then the response status code should be 200
+    And the JSON node "hydra:member" should have 2 elements

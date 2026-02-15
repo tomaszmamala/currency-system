@@ -40,7 +40,7 @@ class BalanceManager
 
         $this->entityManager->flush();
 
-        return $balance;
+        return (string)$balance;
     }
 
     public function decreaseBalance(CurrencyAccount $currencyAccount, string $amount): string
@@ -51,7 +51,7 @@ class BalanceManager
 
         $this->entityManager->flush();
 
-        return $balance;
+        return (string)$balance;
     }
 
     public function hasEnoughMoneyForPayout(CurrencyAccount $currencyAccount, string $amount): bool
