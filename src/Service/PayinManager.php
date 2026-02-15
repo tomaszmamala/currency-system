@@ -24,6 +24,11 @@ class PayinManager
 
         $transaction->setExecuted(true);
 
-        $this->balanceManager->increaseBalance($transaction->getBusinessPartner(), $transaction->getAmount());
+        $currencyAccount = $this->balanceManager->getOrCreateAccount(
+            $transaction->getBusinessPartner(),
+            $transaction->getCurrency()
+        );
+
+        $this->balanceManager->increaseBalance($currencyAccount, $transaction->getAmount());
     }
 }

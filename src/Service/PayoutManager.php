@@ -27,15 +27,17 @@ class PayoutManager
             throw new TransactionExecutionException('Payout transaction date can be only on the current date');
         }
 
-        if (!$this->balanceManager->hasEnoughMoneyForPayout(
+        $currencyAccount = $this->balanceManager->getOrCreateAccount(
             $transaction->getBusinessPartner(),
-            $transaction->getAmount()
-        )) {
+            $transaction->getCurrency()
+        );
+
+        if (!$this->balanceManager->hasEnoughMoneyForPayout($currencyAccount, $transaction->getAmount())) {
             throw new TransactionExecutionException('You do not have enough money for a payout');
         }
 
         $transaction->setExecuted(true);
 
-        $this->balanceManager->decreaseBalance($transaction->getBusinessPartner(), $transaction->getAmount());
+        $this->balanceManager->decreaseBalance($currencyAccount, $transaction->getAmount());
     }
 }
