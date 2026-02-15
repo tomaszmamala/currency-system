@@ -12,6 +12,7 @@
             <tr>
                 <th>Id</th>
                 <th>Amount</th>
+                <th>Currency</th>
                 <th>Name</th>
                 <th>Date</th>
                 <th>Executed</th>
@@ -27,6 +28,7 @@
                 <tr>
                     <td>{{ transaction.id }}</td>
                     <td>{{ transaction.amount }}</td>
+                    <td>{{ transaction.currency.value }}</td>
                     <td>{{ transaction.name }}</td>
                     <td>{{ transaction.date ? transaction.date|date('Y-m-d H:i:s') : '' }}</td>
                     <td>{{ transaction.executed ? 'Yes' : 'No' }}</td>
@@ -50,11 +52,12 @@
                 </tr>
             {% else %}
                 <tr>
-                    <td colspan="9">No records found</td>
+                    <td colspan="11">No records found</td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
 
-    <a class="btn btn-sm btn-outline-primary" href="{{ path('app_transaction_new') }}">Create new</a>
+    <a class="btn btn-sm btn-outline-primary" href="{{ path('app_transaction_new') }}">New transaction</a>
+    <a class="btn btn-sm btn-outline-success" href="{{ path('app_exchange_new') }}">New exchange</a>
 {% endblock %}

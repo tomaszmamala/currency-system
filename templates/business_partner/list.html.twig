@@ -16,7 +16,7 @@
                 <th>City</th>
                 <th>Zip</th>
                 <th>Country</th>
-                <th>Balance</th>
+                <th>Currency Accounts</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -31,7 +31,13 @@
                     <td>{{ businessPartner.city }}</td>
                     <td>{{ businessPartner.zip }}</td>
                     <td>{{ businessPartner.country }}</td>
-                    <td>{{ businessPartner.balance }}</td>
+                    <td>
+                        {% for account in businessPartner.currencyAccounts %}
+                            {{ account.currency.value }}: {{ account.balance }}{% if not loop.last %}, {% endif %}
+                        {% else %}
+                            -
+                        {% endfor %}
+                    </td>
                     <td>
                         <div class="btn-group" role="group">
                             <a class="btn btn-sm btn-outline-primary"
