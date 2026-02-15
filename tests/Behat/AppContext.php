@@ -4,8 +4,10 @@ namespace App\Tests\Behat;
 
 use ApiPlatform\Api\IriConverterInterface;
 use App\Entity\BusinessPartner;
+use App\Entity\CurrencyAccount;
 use App\Entity\Transaction;
 use App\Enums\BusinessPartnerStatusEnum;
+use App\Enums\CurrencyEnum;
 use App\Enums\LegalFormEnum;
 use App\Enums\TransactionTypeEnum;
 use Behat\Behat\Context\Context;
@@ -55,13 +57,26 @@ class AppContext implements Context
             $businessPartner->setName($businessPartnerItem['name']);
             $businessPartner->setStatus($businessPartnerItem['status']);
             $businessPartner->setLegalForm($businessPartnerItem['legalForm']);
-            $businessPartner->setBalance($businessPartnerItem['balance']);
             $businessPartner->setAddress($businessPartnerItem['address']);
             $businessPartner->setCity($businessPartnerItem['city']);
             $businessPartner->setZip($businessPartnerItem['zip']);
             $businessPartner->setCountry($businessPartnerItem['country']);
 
             $manager->persist($businessPartner);
+            $manager->flush();
+
+            // Create currency account if balance is provided
+            if (isset($businessPartnerItem['balance']) && $businessPartnerItem['balance'] !== '') {
+                $currency = isset($businessPartnerItem['currency']) && $businessPartnerItem['currency'] instanceof CurrencyEnum
+                    ? $businessPartnerItem['currency']
+                    : CurrencyEnum::CHF;
+
+                $currencyAccount = new CurrencyAccount();
+                $currencyAccount->setBusinessPartner($businessPartner);
+                $currencyAccount->setCurrency($currency);
+                $currencyAccount->setBalance($businessPartnerItem['balance']);
+                $manager->persist($currencyAccount);
+            }
         }
 
         $manager->flush();
@@ -85,7 +100,11 @@ class AppContext implements Context
             $transaction->setType($transactionItem['type']);
             $transaction->setCountry($transactionItem['country']);
             $transaction->setIban($transactionItem['iban']);
-            $transaction->setIban($transactionItem['iban']);
+
+            $currency = isset($transactionItem['currency']) && $transactionItem['currency'] instanceof CurrencyEnum
+                ? $transactionItem['currency']
+                : CurrencyEnum::CHF;
+            $transaction->setCurrency($currency);
 
             /** @var BusinessPartner $businessPartner */
             $businessPartner = $transactionItem['businessPartner'];
@@ -155,6 +174,9 @@ class AppContext implements Context
                 break;
             case 'type':
                 $value = TransactionTypeEnum::tryFrom($value);
+                break;
+            case 'currency':
+                $value = CurrencyEnum::tryFrom($value);
                 break;
             case 'transaction':
             case 'businessPartner':
