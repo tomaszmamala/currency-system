@@ -27,6 +27,9 @@ class CurrencyExchangeType extends AbstractType
                 'class' => CurrencyEnum::class,
             ])
             ->add('fromAmount')
+            ->add('date', null, [
+                'widget' => 'single_text',
+            ])
         ;
     }
 

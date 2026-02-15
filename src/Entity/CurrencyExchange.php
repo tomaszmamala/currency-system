@@ -76,7 +76,8 @@ class CurrencyExchange
     private ?Transaction $buyTransaction = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    #[Groups(['ExchangeView'])]
+    #[Assert\NotBlank]
+    #[Groups(['ExchangeView', 'ExchangeCreate'])]
     private DateTimeImmutable $date;
 
     #[ORM\Column(type: Types::BOOLEAN)]

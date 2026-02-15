@@ -35,6 +35,7 @@ Feature: Currency Exchange
         "fromCurrency": "CHF",
         "toCurrency": "EUR",
         "fromAmount": "1000",
+        "date": "2024-07-12T09:08:32.563Z",
         "businessPartner": "/api/business_partners/1"
       }
     """

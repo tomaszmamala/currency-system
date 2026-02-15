@@ -7,7 +7,6 @@ use App\Entity\Transaction;
 use App\Enums\CurrencyEnum;
 use App\Enums\TransactionTypeEnum;
 use App\Exceptions\TransactionExecutionException;
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ExchangeManager
@@ -41,8 +40,6 @@ class ExchangeManager
 
         $toAmount = (string) round((float) $exchange->getFromAmount() * (float) $rate, 2);
         $exchange->setToAmount($toAmount);
-
-        $exchange->setDate(new DateTimeImmutable());
     }
 
     private function validateBalance(CurrencyExchange $exchange): void
