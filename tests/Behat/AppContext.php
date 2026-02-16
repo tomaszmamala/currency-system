@@ -4,7 +4,6 @@ namespace App\Tests\Behat;
 
 use ApiPlatform\Api\IriConverterInterface;
 use App\Entity\BusinessPartner;
-use App\Entity\CurrencyAccount;
 use App\Entity\Transaction;
 use App\Enums\BusinessPartnerStatusEnum;
 use App\Enums\CurrencyEnum;
@@ -63,20 +62,6 @@ class AppContext implements Context
             $businessPartner->setCountry($businessPartnerItem['country']);
 
             $manager->persist($businessPartner);
-            $manager->flush();
-
-            // Create currency account if balance is provided
-            if (isset($businessPartnerItem['balance']) && $businessPartnerItem['balance'] !== '') {
-                $currency = isset($businessPartnerItem['currency']) && $businessPartnerItem['currency'] instanceof CurrencyEnum
-                    ? $businessPartnerItem['currency']
-                    : CurrencyEnum::CHF;
-
-                $currencyAccount = new CurrencyAccount();
-                $currencyAccount->setBusinessPartner($businessPartner);
-                $currencyAccount->setCurrency($currency);
-                $currencyAccount->setBalance($businessPartnerItem['balance']);
-                $manager->persist($currencyAccount);
-            }
         }
 
         $manager->flush();

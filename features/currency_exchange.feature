@@ -8,8 +8,8 @@ Feature: Currency Exchange
 
   Scenario: Full exchange flow - payin CHF, exchange to EUR, payout EUR
     Given there is a business partner with data:
-      | name                       | status | legalForm                 | balance | address          | city   | zip  | country |
-      | AMNIS Treasury Services AG | active | limited_liability_company | 0       | Baslerstrasse 60 | Zürich | 8048 | CH      |
+      | name                       | status | legalForm                 | address          | city   | zip  | country |
+      | AMNIS Treasury Services AG | active | limited_liability_company | Baslerstrasse 60 | Zürich | 8048 | CH      |
     # Step 1: Payin 1000 CHF
     When I send a POST request to "/api/transactions/payin" with body:
     """

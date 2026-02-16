@@ -8,17 +8,17 @@ Feature: Business partner
 
   Scenario: Get a list of business partners
     Given there is a business partner with data:
-      | name                       | status | legalForm                 | balance | address          | city   | zip  | country |
-      | AMNIS Treasury Services AG | active | limited_liability_company | 400     | Baslerstrasse 60 | Zürich | 8048 | CH      |
-      | AMNIS Europe AG            | active | limited_liability_company | 200     | Gewerbeweg 15    | Vaduz  | 9490 | LI      |
+      | name                       | status | legalForm                 | address          | city   | zip  | country |
+      | AMNIS Treasury Services AG | active | limited_liability_company | Baslerstrasse 60 | Zürich | 8048 | CH      |
+      | AMNIS Europe AG            | active | limited_liability_company | Gewerbeweg 15    | Vaduz  | 9490 | LI      |
     When I send a GET request to "/api/business_partners"
     Then the response status code should be 200
     And the JSON node "hydra:member" should have 2 elements
 
   Scenario: Get a business partner
     Given there is a business partner with data:
-      | name                       | status | legalForm                 | balance | address          | city   | zip  | country |
-      | AMNIS Treasury Services AG | active | limited_liability_company | 400     | Baslerstrasse 60 | Zürich | 8048 | CH      |
+      | name                       | status | legalForm                 | address          | city   | zip  | country |
+      | AMNIS Treasury Services AG | active | limited_liability_company | Baslerstrasse 60 | Zürich | 8048 | CH      |
     When I send a GET request to "/api/business_partners/1"
     Then the response status code should be 200
     And the JSON node "@id" should be equal to the string "/api/business_partners/1"
