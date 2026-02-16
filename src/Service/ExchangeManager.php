@@ -9,12 +9,12 @@ use App\Enums\TransactionTypeEnum;
 use App\Exceptions\TransactionExecutionException;
 use Doctrine\ORM\EntityManagerInterface;
 
-class ExchangeManager
+readonly class ExchangeManager
 {
     public function __construct(
-        private readonly BalanceManager $balanceManager,
-        private readonly EntityManagerInterface $entityManager,
-        private readonly ExchangeRateProvider $exchangeRateProvider
+        private BalanceManager         $balanceManager,
+        private EntityManagerInterface $entityManager,
+        private ExchangeRateProvider   $exchangeRateProvider
     ) {
     }
 
@@ -38,7 +38,7 @@ class ExchangeManager
         $rate = $this->exchangeRateProvider->getRate($exchange->getFromCurrency(), $exchange->getToCurrency());
         $exchange->setExchangeRate($rate);
 
-        $toAmount = (string) round((float) $exchange->getFromAmount() * (float) $rate, 2);
+        $toAmount = sprintf('%.2f', (float) $exchange->getFromAmount() * (float) $rate);
         $exchange->setToAmount($toAmount);
     }
 
