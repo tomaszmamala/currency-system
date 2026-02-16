@@ -3,9 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Transaction;
+use App\Enums\CurrencyEnum;
+use App\Enums\TransactionTypeEnum;
 use App\Form\TransactionType;
 use App\Repository\BusinessPartnerRepository;
 use App\Repository\TransactionRepository;
+use App\Service\PayinManager;
 use App\Service\PayoutManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -24,29 +27,46 @@ class TransactionController extends AbstractController
         BusinessPartnerRepository $businessPartnerRepository
     ): Response {
         $businessPartnerId = $request->query->get('businessPartnerId');
+        $currencyCode = $request->query->get('currency');
 
         $businessPartner = $businessPartnerId ? $businessPartnerRepository->find($businessPartnerId) : null;
+        $currency = $currencyCode ? CurrencyEnum::tryFrom($currencyCode) : null;
 
         return $this->render('transaction/list.html.twig', [
             'businessPartner' => $businessPartner,
+            'currency' => $currency,
             'transactions' => $businessPartner
-                ? $transactionRepository->findByBusinessPartner($businessPartner)
+                ? $transactionRepository->findByBusinessPartner($businessPartner, $currency)
                 : $transactionRepository->findAll(),
         ]);
     }
 
     #[Route('/new', name: 'app_transaction_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
+    public function new(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        PayinManager $payinManager,
+    ): Response {
         $transaction = new Transaction();
         $form = $this->createForm(TransactionType::class, $transaction);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($transaction);
-            $entityManager->flush();
+            try {
+                $entityManager->persist($transaction);
 
-            return $this->redirectToRoute('app_transaction_list', [], Response::HTTP_SEE_OTHER);
+                if ($transaction->getType() === TransactionTypeEnum::PAYIN) {
+                    $payinManager->execute($transaction);
+                    $request->getSession()->getFlashBag()->add('success', 'Payin executed successfully.');
+                } else {
+                    $entityManager->flush();
+                    $request->getSession()->getFlashBag()->add('success', 'Payout transaction created. Execute it from the list.');
+                }
+
+                return $this->redirectToRoute('app_transaction_list', [], Response::HTTP_SEE_OTHER);
+            } catch (Exception $exception) {
+                $request->getSession()->getFlashBag()->add('danger', $exception->getMessage());
+            }
         }
 
         return $this->render('transaction/new.html.twig', [

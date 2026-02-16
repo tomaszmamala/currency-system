@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
@@ -10,6 +12,7 @@ use ApiPlatform\Metadata\Post;
 use App\Controller\Api\PayinController;
 use App\Controller\Api\PayoutController;
 use App\Controller\Api\PayoutExecutionController;
+use App\Enums\CurrencyEnum;
 use App\Enums\TransactionTypeEnum;
 use App\Repository\TransactionRepository;
 use DateTimeImmutable;
@@ -42,6 +45,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ],
     normalizationContext: ['groups' => ['TransactionView']]
 )]
+#[ApiFilter(SearchFilter::class, properties: ['businessPartner' => 'exact', 'currency' => 'exact'])]
 class Transaction
 {
     #[ORM\Id]
@@ -84,6 +88,11 @@ class Transaction
     #[Assert\Length(min: 1, max: 34)]
     #[Groups(['TransactionView', 'TransactionCreate'])]
     private string $iban;
+
+    #[ORM\Column(type: Types::STRING, length: 3, enumType: CurrencyEnum::class)]
+    #[Assert\Type(type: CurrencyEnum::class, message: 'Choose a valid currency.')]
+    #[Groups(['TransactionView', 'TransactionCreate'])]
+    private CurrencyEnum $currency;
 
     #[ORM\ManyToOne(targetEntity: BusinessPartner::class, inversedBy: 'transactions')]
     #[ORM\JoinColumn(nullable: false)]
@@ -164,6 +173,16 @@ class Transaction
     public function setIban(string $iban): void
     {
         $this->iban = $iban;
+    }
+
+    public function getCurrency(): CurrencyEnum
+    {
+        return $this->currency;
+    }
+
+    public function setCurrency(CurrencyEnum $currency): void
+    {
+        $this->currency = $currency;
     }
 
     public function getBusinessPartner(): BusinessPartner

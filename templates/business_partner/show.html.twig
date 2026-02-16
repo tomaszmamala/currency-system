@@ -39,10 +39,33 @@
                 <th>Country</th>
                 <td>{{ businessPartner.country }}</td>
             </tr>
+        </tbody>
+    </table>
+
+    <h2>Currency Accounts</h2>
+    <table class="table">
+        <thead>
             <tr>
+                <th>Currency</th>
                 <th>Balance</th>
-                <td>{{ businessPartner.balance }}</td>
+                <th>Actions</th>
             </tr>
+        </thead>
+        <tbody>
+            {% for account in businessPartner.currencyAccounts %}
+                <tr>
+                    <td>{{ account.currency.value }}</td>
+                    <td>{{ account.balance }}</td>
+                    <td>
+                        <a class="btn btn-sm btn-outline-success"
+                           href="{{ path('app_transaction_list', {'businessPartnerId': businessPartner.id, 'currency': account.currency.value}) }}">Transactions</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="3">No currency accounts</td>
+                </tr>
+            {% endfor %}
         </tbody>
     </table>
 

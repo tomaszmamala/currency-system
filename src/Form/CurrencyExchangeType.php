@@ -3,48 +3,40 @@
 namespace App\Form;
 
 use App\Entity\BusinessPartner;
-use App\Entity\Transaction;
+use App\Entity\CurrencyExchange;
 use App\Enums\CurrencyEnum;
-use App\Enums\TransactionTypeEnum;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class TransactionType extends AbstractType
+class CurrencyExchangeType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('type', ChoiceType::class, [
-                'choices' => [
-                    'Payin' => TransactionTypeEnum::PAYIN,
-                    'Payout' => TransactionTypeEnum::PAYOUT,
-                ],
-            ])
             ->add('businessPartner', EntityType::class, [
                 'class' => BusinessPartner::class,
                 'choice_label' => 'name',
             ])
-            ->add('currency', EnumType::class, [
+            ->add('fromCurrency', EnumType::class, [
                 'class' => CurrencyEnum::class,
             ])
-            ->add('amount')
-            ->add('name')
+            ->add('toCurrency', EnumType::class, [
+                'class' => CurrencyEnum::class,
+            ])
+            ->add('fromAmount')
             ->add('date', null, [
                 'widget' => 'single_text',
             ])
-            ->add('country')
-            ->add('iban')
         ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Transaction::class,
+            'data_class' => CurrencyExchange::class,
         ]);
     }
 }

@@ -1,17 +1,19 @@
 {% extends 'base.html.twig' %}
 
-{% set titleText = businessPartner is not null ? "Transaction list for " ~ businessPartner : "Transaction list" %}
+{% set titleText = businessPartner is not null ? "Transaction list for " ~ businessPartner ~ (currency is defined and currency is not null ? " (" ~ currency.value ~ ")" : "") : "Transaction list" %}
 
 {% block title %}{{ titleText }}{% endblock %}
 
 {% block body %}
     <h1>{{ titleText }}</h1>
-
+    <br />
+    <h2>All Transactions</h2>
     <table class="table">
         <thead>
             <tr>
                 <th>Id</th>
                 <th>Amount</th>
+                <th>Currency</th>
                 <th>Name</th>
                 <th>Date</th>
                 <th>Executed</th>
@@ -27,6 +29,7 @@
                 <tr>
                     <td>{{ transaction.id }}</td>
                     <td>{{ transaction.amount }}</td>
+                    <td>{{ transaction.currency.value }}</td>
                     <td>{{ transaction.name }}</td>
                     <td>{{ transaction.date ? transaction.date|date('Y-m-d H:i:s') : '' }}</td>
                     <td>{{ transaction.executed ? 'Yes' : 'No' }}</td>
@@ -50,11 +53,41 @@
                 </tr>
             {% else %}
                 <tr>
-                    <td colspan="9">No records found</td>
+                    <td colspan="11">No records found</td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
 
-    <a class="btn btn-sm btn-outline-primary" href="{{ path('app_transaction_new') }}">Create new</a>
+    <a class="btn btn-sm btn-outline-primary" href="{{ path('app_transaction_new') }}">New PayIn/PayOut</a>
+    <a class="btn btn-sm btn-outline-success" href="{{ path('app_exchange_new') }}">New exchange</a>
+
+    {% if businessPartner is not null %}
+        <h2 style="margin-top: 50px">Currency Accounts</h2>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Currency</th>
+                <th>Balance</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for account in businessPartner.currencyAccounts %}
+                <tr>
+                    <td>{{ account.currency.value }}</td>
+                    <td>{{ account.balance }}</td>
+                    <td>
+                        <a class="btn btn-sm btn-outline-success"
+                           href="{{ path('app_transaction_list', {'businessPartnerId': businessPartner.id, 'currency': account.currency.value}) }}">Transactions</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="3">No currency accounts</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
 {% endblock %}

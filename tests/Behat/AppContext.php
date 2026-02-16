@@ -6,6 +6,7 @@ use ApiPlatform\Api\IriConverterInterface;
 use App\Entity\BusinessPartner;
 use App\Entity\Transaction;
 use App\Enums\BusinessPartnerStatusEnum;
+use App\Enums\CurrencyEnum;
 use App\Enums\LegalFormEnum;
 use App\Enums\TransactionTypeEnum;
 use Behat\Behat\Context\Context;
@@ -55,7 +56,6 @@ class AppContext implements Context
             $businessPartner->setName($businessPartnerItem['name']);
             $businessPartner->setStatus($businessPartnerItem['status']);
             $businessPartner->setLegalForm($businessPartnerItem['legalForm']);
-            $businessPartner->setBalance($businessPartnerItem['balance']);
             $businessPartner->setAddress($businessPartnerItem['address']);
             $businessPartner->setCity($businessPartnerItem['city']);
             $businessPartner->setZip($businessPartnerItem['zip']);
@@ -85,7 +85,11 @@ class AppContext implements Context
             $transaction->setType($transactionItem['type']);
             $transaction->setCountry($transactionItem['country']);
             $transaction->setIban($transactionItem['iban']);
-            $transaction->setIban($transactionItem['iban']);
+
+            $currency = isset($transactionItem['currency']) && $transactionItem['currency'] instanceof CurrencyEnum
+                ? $transactionItem['currency']
+                : CurrencyEnum::CHF;
+            $transaction->setCurrency($currency);
 
             /** @var BusinessPartner $businessPartner */
             $businessPartner = $transactionItem['businessPartner'];
@@ -155,6 +159,9 @@ class AppContext implements Context
                 break;
             case 'type':
                 $value = TransactionTypeEnum::tryFrom($value);
+                break;
+            case 'currency':
+                $value = CurrencyEnum::tryFrom($value);
                 break;
             case 'transaction':
             case 'businessPartner':

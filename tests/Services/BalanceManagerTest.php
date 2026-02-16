@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Services;
 
-use App\Entity\BusinessPartner;
-use App\Enums\BusinessPartnerStatusEnum;
-use App\Enums\LegalFormEnum;
+use App\Entity\CurrencyAccount;
+use App\Enums\CurrencyEnum;
 use App\Service\BalanceManager;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -26,42 +25,36 @@ class BalanceManagerTest extends WebTestCase
 
     public function testPayinBalanceChange(): void
     {
-        $businessPartner = $this->createBusinessPartner();
+        $currencyAccount = $this->createCurrencyAccount();
 
-        $this->balanceManager->increaseBalance($businessPartner, '1000');
+        $this->balanceManager->increaseBalance($currencyAccount, '1000');
 
-        $this->assertEquals('11000', $businessPartner->getBalance());
+        $this->assertEquals('11000', $currencyAccount->getBalance());
     }
 
     public function testPayoutBalanceChange(): void
     {
-        $businessPartner = $this->createBusinessPartner();
+        $currencyAccount = $this->createCurrencyAccount();
 
-        $this->balanceManager->decreaseBalance($businessPartner, '1000');
+        $this->balanceManager->decreaseBalance($currencyAccount, '1000');
 
-        $this->assertEquals('9000', $businessPartner->getBalance());
+        $this->assertEquals('9000', $currencyAccount->getBalance());
     }
 
     public function testHasEnoughMoneyForPayout(): void
     {
-        $businessPartner = $this->createBusinessPartner();
+        $currencyAccount = $this->createCurrencyAccount();
 
-        $this->assertTrue($this->balanceManager->hasEnoughMoneyForPayout($businessPartner, '1000'));
-        $this->assertFalse($this->balanceManager->hasEnoughMoneyForPayout($businessPartner, '11000'));
+        $this->assertTrue($this->balanceManager->hasEnoughMoneyForPayout($currencyAccount, '1000'));
+        $this->assertFalse($this->balanceManager->hasEnoughMoneyForPayout($currencyAccount, '11000'));
     }
 
-    private function createBusinessPartner(): BusinessPartner
+    private function createCurrencyAccount(): CurrencyAccount
     {
-        $businessPartner = new BusinessPartner();
-        $businessPartner->setName('AMNIS Treasury Services AG');
-        $businessPartner->setStatus(BusinessPartnerStatusEnum::ACTIVE);
-        $businessPartner->setLegalForm(LegalFormEnum::LIMITED_LIABILITY_COMPANY);
-        $businessPartner->setBalance('10000');
-        $businessPartner->setAddress('Baslerstrasse 60');
-        $businessPartner->setCity('Zürich');
-        $businessPartner->setZip('8048');
-        $businessPartner->setCountry('CH');
+        $currencyAccount = new CurrencyAccount();
+        $currencyAccount->setCurrency(CurrencyEnum::CHF);
+        $currencyAccount->setBalance('10000');
 
-        return $businessPartner;
+        return $currencyAccount;
     }
 }

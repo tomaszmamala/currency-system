@@ -3,7 +3,9 @@
 namespace App\DataFixtures;
 
 use App\Entity\BusinessPartner;
+use App\Entity\CurrencyAccount;
 use App\Enums\BusinessPartnerStatusEnum;
+use App\Enums\CurrencyEnum;
 use App\Enums\LegalFormEnum;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -16,25 +18,24 @@ class BusinessPartnerFixtures extends Fixture
         $businessPartner->setName('AMNIS Treasury Services AG');
         $businessPartner->setStatus(BusinessPartnerStatusEnum::ACTIVE);
         $businessPartner->setLegalForm(LegalFormEnum::LIMITED_LIABILITY_COMPANY);
-        $businessPartner->setBalance('10000');
         $businessPartner->setAddress('Baslerstrasse 60');
         $businessPartner->setCity('Zürich');
-        $businessPartner->setZip(8048);
+        $businessPartner->setZip('8048');
         $businessPartner->setCountry('CH');
 
         $manager->persist($businessPartner);
 
-        $businessPartner = new BusinessPartner();
-        $businessPartner->setName('AMNIS Europe AG');
-        $businessPartner->setStatus(BusinessPartnerStatusEnum::INACTIVE);
-        $businessPartner->setLegalForm(LegalFormEnum::LIMITED_LIABILITY_COMPANY);
-        $businessPartner->setBalance('10000');
-        $businessPartner->setAddress('Gewerbeweg 15');
-        $businessPartner->setCity('Vaduz');
-        $businessPartner->setZip(9490);
-        $businessPartner->setCountry('LI');
+        $chfAccount = new CurrencyAccount();
+        $chfAccount->setBusinessPartner($businessPartner);
+        $chfAccount->setCurrency(CurrencyEnum::CHF);
+        $chfAccount->setBalance('0');
+        $manager->persist($chfAccount);
 
-        $manager->persist($businessPartner);
+        $eurAccount = new CurrencyAccount();
+        $eurAccount->setBusinessPartner($businessPartner);
+        $eurAccount->setCurrency(CurrencyEnum::EUR);
+        $eurAccount->setBalance('0');
+        $manager->persist($eurAccount);
 
         $manager->flush();
     }
